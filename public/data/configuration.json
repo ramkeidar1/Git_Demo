@@ -1,0 +1,41 @@
+{
+  "configurationManager": {
+    "url": "http://config-manager.example.com",
+    "username": "admin",
+    "password": "1"
+  },
+  "branchSelection": {
+    "branches": [
+      "Main",
+      "Develop",
+      "Feature",
+      "QA",
+      "Product",
+      "Test",
+      "HI",
+      "HELLO",
+      "SHIRA",
+      "assaf",
+      "NOA",
+      "Keidar",
+      "alpha",
+      "shalom"
+    ],
+    "selectedBranch": "Product"
+  },
+  "build": {
+    "versionNumber": "1.0.0.2",
+    "command": "npm run build",
+    "outputDirectory": "build/"
+  },
+  "copyToTarget": {
+    "targetDirectory": "/public/class/build"
+  },
+  "vdd": {
+    "versionNumber": "1.0.0.2",
+    "selectedBranch": "Product",
+    "targetDirectory": "/public/class/build",
+    "releaseDate": "26/09/2024",
+    "recentFixes": []
+  }
+}
