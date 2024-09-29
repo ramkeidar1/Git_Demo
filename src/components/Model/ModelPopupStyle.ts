@@ -1,6 +1,5 @@
 // import styled from "styled-components";
 import { styled } from "@mui/material"
-import Model from "./Model";
 
 const ModelContainer = styled('div')`
     background-color: white;

@@ -1,11 +1,9 @@
-import { Typography } from "@mui/material";
-import TextBox from "../Common/TextBox";
-import ButtonHandler from "../Common/ButtonHandler";
-import ElementBox from "../Common/ElementBox";
 import { useState } from "react";
-import { GenerateVVDHandler } from "../Common/DataHandler";
-import { useEffect } from "react";
+import TextBox from "../Common/TextBox";
 import TextBar from "../Common/TextBar";
+import { Typography } from "@mui/material";
+import ElementBox from "../Common/ElementBox";
+import ButtonHandler from "../Common/ButtonHandler";
 import { updateVVDInfo } from "../Common/DataHandler";
 
 const getCurrentDate = (): string => {
@@ -16,47 +14,55 @@ const getCurrentDate = (): string => {
     return `${dd}/${mm}/${yyyy}`;
 };
 
-var initialRecentFixes = "Add a note"
 const CURRENT_DATE = getCurrentDate();
 
 interface VersionDescriptionDocumentProps {
     loginStatus: boolean;
-    closeFunc: any;
+    closeFunc: () => void;
 }
 
 const VersionDescriptionDocument: React.FC<VersionDescriptionDocumentProps> = ({ loginStatus, closeFunc }) => {
     
     const [currentNote, setCurrentNote] = useState<string>('');
     const [recentFixes, setRecentFixes] = useState<string[]>([]);
-    const [buildUpdatedStatus, setbuildUpdatedStatus] = useState(<></>); 
+    const [buildUpdatedStatus, setbuildUpdatedStatus] = useState<string>(''); 
 
-    function handlenCurrentNote(event: any) {
+    function handlenCurrentNote(event: React.ChangeEvent<HTMLInputElement>) {
         setCurrentNote(event.target.value);
     }
 
     function addToNotesArray() {
-        // let tempArray = RecentFixes;
-        // tempArray.push(currentNote)
-        // setRecentFixes(tempArray)
         if (currentNote.length < 1) {
-            setbuildUpdatedStatus(<Typography color="red">Please enter a note</Typography>);
+            setbuildUpdatedStatus('NoNote');
             return
         } 
         setRecentFixes([...recentFixes, currentNote])
         setCurrentNote('')
+        setbuildUpdatedStatus('NoteAdded');
     }
 
-    const handleUpdateInfo = async (event: React.FormEvent) => {
-        event.preventDefault();
+    const handleUpdateInfo = async () => {
         const success = await updateVVDInfo(CURRENT_DATE, recentFixes);
-    
-        if (success == 0) {
-            console.log('Added successful');
-            setbuildUpdatedStatus(<Typography color="green">Generated VVD!</Typography>);
-
+        if (success) {
+            setbuildUpdatedStatus('Success');
         }
-        else if (success == 1) {
-            setbuildUpdatedStatus(<Typography color="red">Error fetching data</Typography>);
+        else {
+            setbuildUpdatedStatus('ErrorInFetching');
+        }
+    }
+
+    function updateOutputForUser() {
+        if (buildUpdatedStatus == 'NoNote') {
+            return (<Typography color="red">Please enter a note</Typography>);
+        }
+        else if (buildUpdatedStatus == 'Success') {
+            return (<Typography color="green">Generated VVD!</Typography>);
+        }
+        else if (buildUpdatedStatus == 'ErrorInFetching') {
+            return (<Typography color="red">Error fetching data</Typography>);
+        }
+        else if (buildUpdatedStatus == 'NoteAdded') {
+            return (<Typography color="green">Note added</Typography>);
         }
     }
 
@@ -64,12 +70,11 @@ const VersionDescriptionDocument: React.FC<VersionDescriptionDocumentProps> = ({
         <>
         <Typography variant="h6">Version Description Document (VVD)</Typography>
         <ElementBox closeFunc={closeFunc}>
-            {/* <TextBar label="Version number: " currentValue={currentVersion}/> */}
             <TextBar label="Date: " currentValue={CURRENT_DATE}/>
-            <TextBox label="Recent fixes: " type="text" placeholder={loginStatus? initialRecentFixes: ''} loginStatus={loginStatus} onChange={handlenCurrentNote} currentValue={currentNote}/>
+            <TextBox label="Recent fixes: " type="text" placeholder={loginStatus? "Add a note": ''} loginStatus={loginStatus} onChange={handlenCurrentNote} currentValue={currentNote}/>
             <ButtonHandler buttonName="Add note" loginStatus={loginStatus} buttonFunc={addToNotesArray}/>
             <ButtonHandler buttonName="Generate" loginStatus={loginStatus} buttonFunc={handleUpdateInfo}/>
-            {buildUpdatedStatus}
+            {updateOutputForUser()}
         </ElementBox>
         </>
     )

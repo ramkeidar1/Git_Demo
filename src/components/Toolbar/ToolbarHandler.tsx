@@ -1,28 +1,15 @@
-import {AppBar, Toolbar, IconButton, Typography, Button, Box} from "@mui/material";
+import {AppBar, Toolbar, IconButton, Button} from "@mui/material";
   
-const LIST_OF_ELEMENTS_IN_JSON = ["Log in", "Select Branch", "Build", "Copy To Target", "Generete VVD"]
-
-
+const LIST_OF_ELEMENTS_IN_JSON = ["Authentication", "Branch", "Build", "Copy", "VVD"]
 
 interface ToolBarProps {
-    mainBarStatusFunc: any;
+  HandleWantedTabHandle: (arg1: string, arg2: boolean) => void;
 }
 
-const ToolBar: React.FC<ToolBarProps> = ({ mainBarStatusFunc }) => {
-
-    const mainBarStatusHandle = (index: number) => {
-        mainBarStatusFunc((mainBarStatus: boolean[]) => 
-            mainBarStatus.map((value, i) => 
-            i === index ? true : value  
-          )
-        );
-      };
+const ToolBar: React.FC<ToolBarProps> = ({ HandleWantedTabHandle }) => {
 
     const mappedToolBarLists = LIST_OF_ELEMENTS_IN_JSON.map((item, index) => (
-        <Button
-          key={index}
-          color="inherit"
-          onClick={() => mainBarStatusHandle(index)}
+        <Button key={index} color="inherit" onClick={() => HandleWantedTabHandle(item, true)}
           sx={{
             display: 'flex', 
             justifyContent: 'center', 
@@ -31,7 +18,7 @@ const ToolBar: React.FC<ToolBarProps> = ({ mainBarStatusFunc }) => {
             height: '50px',
             marginBottom: '20px'  
           }}>
-          {item}  {/* Correctly placing the children (text) inside the Button */}
+          {item}  
         </Button>
       ));
 

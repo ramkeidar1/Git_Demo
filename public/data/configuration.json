@@ -12,16 +12,9 @@
       "QA",
       "Product",
       "Test",
-      "HI",
-      "HELLO",
-      "SHIRA",
-      "assaf",
-      "NOA",
-      "Keidar",
-      "alpha",
-      "shalom"
+      "Final"
     ],
-    "selectedBranch": "Product"
+    "selectedBranch": "Final"
   },
   "build": {
     "versionNumber": "1.0.0.2",
@@ -33,9 +26,11 @@
   },
   "vdd": {
     "versionNumber": "1.0.0.2",
-    "selectedBranch": "Product",
+    "selectedBranch": "Develop",
     "targetDirectory": "/public/class/build",
-    "releaseDate": "26/09/2024",
-    "recentFixes": []
+    "releaseDate": "29/09/2024",
+    "recentFixes": [
+      "Hello"
+    ]
   }
 }

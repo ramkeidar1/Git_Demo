@@ -1,8 +1,12 @@
 import { Typography } from "@mui/material";
 
+// The Text Bar componenet which is used in the Project. 
+// Used to display data for the user
+
+
 interface TextBarProps {
-    label: string;
-    currentValue: string;
+    label: string; //The declaration of which data is displayed to the user
+    currentValue: string; //The data that is displayed
 }
 
 const TextBar: React.FC<TextBarProps> = ({label, currentValue}) => {

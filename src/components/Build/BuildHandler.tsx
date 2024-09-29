@@ -13,40 +13,43 @@ let initialBuildCommand = "Enter the build command"
 
 
 interface BuildHandlerProps {
-    loginStatus: boolean;
-    closeFunc: any;
+    loginStatus: boolean; //The function that logs out of the application
+    closeFunc: () => void; //The function that stops rendering the component
 }
 
 const BuildHandler: React.FC<BuildHandlerProps> = ({ loginStatus, closeFunc }) => {
 
-    const [currentVersion, setCurrentVersion] = useState<string>('');
-    const [currentBuildCommand, setCurrentBuildCommand] = useState<string>('');
-    const [currentOutputDir, setCurrentOutputDir] = useState<string>('');
-    const [buildUpdatedStatus, setbuildUpdatedStatus] = useState(<></>); 
+    const [currentVersion, setCurrentVersion] = useState<string>(''); //The data that is displayed to the user in 'version'
+    const [currentBuildCommand, setCurrentBuildCommand] = useState<string>(''); //The data that is displayed to the user in 'build command'
+    const [currentOutputDir, setCurrentOutputDir] = useState<string>(''); //The data that is displayed to the user in 'output dir'
+    const [buildUpdatedStatus, setbuildUpdatedStatus] = useState(<></>); //An HTML component that renders the status of the action that the user has done when necessary
 
-    function handlenVersion(event: any) {
+    //Handles the user inputs when entering a new version
+    function handlenVersion(event: React.ChangeEvent<HTMLInputElement>) {
         setCurrentVersion(event.target.value);
     }
 
-    function handlenCurrentBuildCommand(event: any) {
+    //Handles the user inputs when entering a new build command
+    function handlenCurrentBuildCommand(event: React.ChangeEvent<HTMLInputElement>) {
         setCurrentBuildCommand(event.target.value);
     }
-
-    function handlenCurrentOutputDir(event: any) {
+    
+    //Handles the user inputs when entering a new output dir
+    function handlenCurrentOutputDir(event: React.ChangeEvent<HTMLInputElement>) {
         setCurrentOutputDir(event.target.value);
     }
 
-    const updateFromJson = async (event: React.FormEvent) => {
-        event.preventDefault();
+    //Fetches the data of the current 'build' from JSON and updating the application to be them
+    const updateFromJson = async () => {
         const lastInfo = await buildHandler();
         setCurrentVersion(lastInfo[0]);
         setCurrentBuildCommand(lastInfo[1])
         setCurrentOutputDir(lastInfo[2])
     }
 
-    const handleUpdateInfo = async (event: React.FormEvent) => {
-        event.preventDefault();
-
+    
+    //Updates the data to the JSON and updates the 'setbuildUpdatedStatus' to be the result
+    const handleUpdateInfo = async () => {
 
         setbuildUpdatedStatus(<CircularProgress color="success"></CircularProgress>)
         await new Promise(resolve => setTimeout(resolve, 3000));

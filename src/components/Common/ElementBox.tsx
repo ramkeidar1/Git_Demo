@@ -1,8 +1,10 @@
 import { Box, Chip } from "@mui/material";
 
+// The Element componenet which is used in the Project
+
 interface ElementBoxProps {
-    children: any;
-    closeFunc: any;
+    children: React.ReactNode; //The children which the Element should render
+    closeFunc: any; //The func that closed the Chip of the ElementBox
 }
 
 const ElementBox: React.FC<ElementBoxProps> = ({children, closeFunc}) => {

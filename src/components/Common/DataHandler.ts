@@ -1,18 +1,13 @@
-
-const LIST_OF_ELEMENTS_IN_JSON = ["configurationManager", "branchSelection", "build", "copyToTarget", "vdd"]
 const JSON_URL = 'http://localhost:3000/'
 
 
-// Define the structure of the configurationManager data
-interface ConfigurationManager {
-  url: string;
-  username: string;
-  password: string;
-}
-
-// Define the structure of the entire configuration JSON
+// The structure of the entire configuration JSON
 interface Configuration {
-  configurationManager: ConfigurationManager;
+  configurationManager: {
+    url: string;
+    username: string;
+    password: string;
+  };
   branchSelection: string[];
   build: {
     versionNumber: string;
@@ -29,12 +24,12 @@ interface Configuration {
   };
 }
 
-const retreiveData = async ( valueNumber: number ): Promise<Configuration> => {
+//Access the JSON server and extracts the data
+const retreiveData = async ( wantedExtension: string ): Promise<Configuration> => {
   try {
 
     // Fetch the configuration data from the JSON file
-    const response = await fetch(`${JSON_URL}${LIST_OF_ELEMENTS_IN_JSON[valueNumber]}`);
-    // console.log(response)
+    const response = await fetch(`${JSON_URL}${wantedExtension}`);
     
     // Check if the response is OK (status is in the 2xx range)
     if (!response.ok) {
@@ -43,12 +38,10 @@ const retreiveData = async ( valueNumber: number ): Promise<Configuration> => {
     
     // Parse and return the JSON data
     const data = await response.json();
-    // console.log('Fetched data:', data);
     
     return data; // Return the fetched data
 
   } catch (error) {
-    // Log any errors and rethrow them
     console.error('Error fetching data:', error);
     throw error; // Ensure the error is thrown to the calling code
   }
@@ -56,9 +49,8 @@ const retreiveData = async ( valueNumber: number ): Promise<Configuration> => {
   
 export const loginHandler = async (username: string, password: string): Promise<Array<any>> => {
   try {
-    const configuration = await retreiveData(0);
+    const configuration = await retreiveData('configurationManager');
     // Log the configurationManager username and password
-    // console.log(`Username: ${configuration.configurationManager.username}, Password: ${configuration.configurationManager.password}`);
 
     // Check if the username matches
     if (configuration.username !== username) {
@@ -78,9 +70,10 @@ export const loginHandler = async (username: string, password: string): Promise<
     }
 };
 
+//Extracting the data of the element 'branchSelection' from the JSON and returns it at a list
 export const branchHandler = async (): Promise<Array<any>> => {
   try {
-    const configuration = await retreiveData(1);
+    const configuration = await retreiveData("branchSelection");
     const branchesArray = Object.values(configuration);
     return branchesArray
   } catch (error) {
@@ -89,9 +82,11 @@ export const branchHandler = async (): Promise<Array<any>> => {
     }
 };
 
+
+//Extracting the data of the element 'build' from the JSON and returns it at a list
 export const buildHandler = async (): Promise<any> => {
   try {
-    const configuration = await retreiveData(2);
+    const configuration = await retreiveData('build');
     const buildInfoArray = Object.values(configuration);
     return buildInfoArray
   } catch (error) {
@@ -100,9 +95,10 @@ export const buildHandler = async (): Promise<any> => {
     }
 };
 
+//Extracting the data of the element 'copyToTarget' from the JSON and returns it at a list
 export const copyHandler = async (): Promise<any> => {
     try {
-      const configuration = await retreiveData(3);
+      const configuration = await retreiveData('copyToTarget');
       const copyInfoArray = Object.values(configuration);
       return copyInfoArray
     } catch (error) {
@@ -111,9 +107,10 @@ export const copyHandler = async (): Promise<any> => {
       }
 };
 
+//Extracting the data of the element 'vvd' from the JSON and returns it at a list
 export const GenerateVVDHandler = async (): Promise<any> => {
     try {
-      const configuration = await retreiveData(4);
+      const configuration = await retreiveData('vdd');
       const versionData = configuration;
       return versionData
     } catch (error) {
@@ -122,18 +119,18 @@ export const GenerateVVDHandler = async (): Promise<any> => {
       }
 };
 
+//Extracting the data of the element 'branchSelection', adds to the list the new brach and updates the JSON
 export const addNewBranch = async ( branchName: string) : Promise<number> => {
   try {
-    let configuration = await retreiveData(1);
+    let configuration = await retreiveData('branchSelection');
     let newArray = Object.values(configuration)[0]
-    if (branchName.length < 1) {return 3}
+    if (branchName.length < 1) {return 3} //No data was entred
     if (Array.isArray(newArray)) {
-      if (newArray.includes(branchName)) { return 1 };
+      if (newArray.includes(branchName)) { return 1 }; //Branch is already in list
       
       const updatedBranches = [...newArray, branchName];
-      // console.log(updatedBranches)
       
-      const response = await fetch(`${JSON_URL}${LIST_OF_ELEMENTS_IN_JSON[1]}`, {
+      const response = await fetch(`${JSON_URL}${'branchSelection'}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -147,7 +144,6 @@ export const addNewBranch = async ( branchName: string) : Promise<number> => {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
   
-      // console.log("Build info updated successfully");
       return 0;  // Indicating success  
     }
     return 2;
@@ -157,12 +153,13 @@ export const addNewBranch = async ( branchName: string) : Promise<number> => {
   }
 };
 
+//Updates the 'selectedBranch' in JSON to be the new branch to be the new data that was entred by the user
 export const selectBranch = async ( branchName: string) : Promise<number> => {
   try {
-    let configuration = await retreiveData(1);
+    let configuration = await retreiveData('branchSelection');
     const newArray = Object.values(configuration)[0]
     if (branchName.length < 1) {return 2}
-    const response = await fetch(`${JSON_URL}${LIST_OF_ELEMENTS_IN_JSON[1]}`, {
+    const response = await fetch(`${JSON_URL}${'branchSelection'}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -176,7 +173,6 @@ export const selectBranch = async ( branchName: string) : Promise<number> => {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
-    // console.log("Build info updated successfully");
     return 0;  // Indicating success  
   } catch (error) {
     console.error('Error fetching configuration data:', error);
@@ -184,10 +180,11 @@ export const selectBranch = async ( branchName: string) : Promise<number> => {
   }
 };
 
+//Updates the data in the 'build' element in JSON to be the new data that was entred by the user
 export const updateBuildInfo = async (versionData: string, buildCommand: string, outputDir: string): Promise<number> => {
   try {
     if (versionData.length < 1 || buildCommand.length < 1 || outputDir.length < 1) {return 2}
-    const response = await fetch(`${JSON_URL}${LIST_OF_ELEMENTS_IN_JSON[2]}`, {
+    const response = await fetch(`${JSON_URL}${'build'}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -202,19 +199,18 @@ export const updateBuildInfo = async (versionData: string, buildCommand: string,
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
-    // console.log("Build info updated successfully");
     return 0;  // Indicating success
 
   } catch (error) {
-    // console.error("Error updating build info:", error);
     return 1;  // Indicating failure
   }
 };
 
+//Updates the data in the 'copyToTarget' element in JSON to be the new data that was entred by the user
 export const updateCopyInfo = async (currentTarget: string): Promise<number> => {
   try {
     if (currentTarget.length < 1) {return 2}
-    const response = await fetch(`${JSON_URL}${LIST_OF_ELEMENTS_IN_JSON[3]}`, {
+    const response = await fetch(`${JSON_URL}${'copyToTarget'}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -227,7 +223,6 @@ export const updateCopyInfo = async (currentTarget: string): Promise<number> => 
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
-    // console.log("Build info updated successfully");
     return 0;  // Indicating success
 
   } catch (error) {
@@ -236,14 +231,15 @@ export const updateCopyInfo = async (currentTarget: string): Promise<number> => 
   }
 };
 
+//Updates the data in the 'vvd' element in JSON to be the new data that was entred by the user
 export const updateVVDInfo = async (currentDate: string, recentFixes: string[]): Promise<number> => {
   try {
 
-    const responseFromBranch = await retreiveData(1);
-    const responseFromBuild = await retreiveData(2);
-    const responseFromCopy = await retreiveData(3);
+    const responseFromBranch = await retreiveData('branchSelection');
+    const responseFromBuild = await retreiveData('build');
+    const responseFromCopy = await retreiveData('copyToTarget');
 
-    const response = await fetch(`${JSON_URL}${LIST_OF_ELEMENTS_IN_JSON[4]}`, {
+    const response = await fetch(`${JSON_URL}${'vdd'}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -256,18 +252,17 @@ export const updateVVDInfo = async (currentDate: string, recentFixes: string[]):
       )
     });
 
-    
+
 
     // Check if the response is successful
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
-    // console.log("Build info updated successfully");
-    return 0;  // Indicating success
+    return 1;  // Indicating success
 
   } catch (error) {
     console.error("Error updating build info:", error);
-    return 1;  // Indicating failure
+    return 0;  // Indicating failure
   }
 };
